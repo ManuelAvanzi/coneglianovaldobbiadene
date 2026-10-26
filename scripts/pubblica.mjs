@@ -1,5 +1,5 @@
-// Pubblica online: salva tutte le modifiche in un commit e le spinge su GitHub (ramo main).
-// Il workflow .github/workflows/pages.yml fa il resto e il sito compare su https://<utente>.github.io/<repo>/
+// Pubblica online: salva tutte le modifiche in un commit e le spinge su GitHub, sul ramo main e sul ramo gh-pages.
+// GitHub Pages serve il ramo gh-pages così com'è (sito statico) su https://<utente>.github.io/<repo>/
 // Uso:
 //   npm run pubblica                                    (repo già collegato)
 //   npm run pubblica -- https://github.com/UTENTE/REPO.git   (la prima volta: collega il repo appena creato su GitHub)
@@ -28,5 +28,6 @@ const [, utente, repo] = m;
 run('git add -A');
 if (out('git status --porcelain')) run(`git commit -q -m "Aggiornamento del ${new Date().toLocaleString('it-IT')}"`);
 run('git push -u origin main');
+run('git push -f origin main:gh-pages');
 console.log(`\nSpinto su GitHub. Tra circa un minuto il sito è su https://${utente.toLowerCase()}.github.io/${repo}/`);
-console.log(`Stato della pubblicazione: https://github.com/${utente}/${repo}/actions`);
+console.log(`Stato della pubblicazione: https://github.com/${utente}/${repo}/deployments`);

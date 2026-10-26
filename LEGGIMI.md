@@ -45,15 +45,15 @@ Per aggiungere o spostare un luogo, correggere una tappa o un itinerario: modifi
 ## Pubblicazione online (GitHub Pages)
 
 Il sito è statico: MapLibre è copiata in `vendor/`, i dati in `data/`, niente build.
-A ogni push su `main` il workflow `.github/workflows/pages.yml` pubblica il contenuto del repo
-su https://manuelavanzi.github.io/coneglianovaldobbiadene/ (attiva Pages da solo la prima volta).
+`npm run pubblica` spinge il contenuto del repo sui rami `main` e `gh-pages`; GitHub Pages serve
+il ramo `gh-pages` su https://manuelavanzi.github.io/coneglianovaldobbiadene/.
 
 La prima volta:
 1. crea un repository vuoto e **pubblico** su https://github.com/new chiamato `coneglianovaldobbiadene` (senza README);
 2. `npm run pubblica -- https://github.com/ManuelAvanzi/coneglianovaldobbiadene.git`
 
 Le volte successive basta `npm run pubblica` (fa commit di tutto e push). Lo stato della
-pubblicazione si vede nella scheda Actions del repo; il sito è online circa un minuto dopo.
+pubblicazione si vede in Settings → Pages del repo; il sito si aggiorna circa un minuto dopo.
 
 ## Struttura
 
