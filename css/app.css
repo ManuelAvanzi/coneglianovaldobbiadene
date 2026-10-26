@@ -1,0 +1,191 @@
+:root {
+  --carta: #F6EED9;
+  --carta-scura: #EADFC0;
+  --inchiostro: #2F3B42;
+  --inchiostro-chiaro: #5F6A70;
+  --rosso: #9C1220;
+  --rosso-vivo: #C8102E;
+  --oro: #C9A227;
+  --bordo: rgba(47, 59, 66, 0.14);
+  --ombra: 0 12px 32px rgba(32, 28, 16, 0.22);
+  --display: 'Fraunces', Georgia, serif;
+  --testo: 'Albert Sans', system-ui, sans-serif;
+  --pannello-l: 340px;
+  --spia: 200px;                 /* altezza della parte sempre visibile del foglio (telefono), aggiornata da JS */
+  --sicuro-basso: env(safe-area-inset-bottom, 0px);
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--testo);
+  color: var(--inchiostro);
+  background: #36434B;
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+  -webkit-tap-highlight-color: transparent;
+  touch-action: manipulation;
+}
+
+#mappa { position: fixed; inset: 0; }
+.maplibregl-ctrl-attrib { font-family: var(--testo); font-size: 10px; background: rgba(246, 238, 217, 0.8) !important; }
+.maplibregl-canvas:focus { outline: none; }
+.maplibregl-canvas-container.maplibregl-interactive { cursor: grab; }
+.maplibregl-canvas-container.maplibregl-interactive:active { cursor: grabbing; }
+#mappa.puntatore .maplibregl-canvas-container.maplibregl-interactive { cursor: pointer; }
+
+/* ── Foglio / pannello ─────────────────────────────────── */
+.pannello {
+  position: fixed; left: 0; right: 0; bottom: 0;
+  height: 92dvh; max-height: 92vh;
+  display: flex; flex-direction: column;
+  background: var(--carta);
+  border-radius: 18px 18px 0 0;
+  box-shadow: 0 -8px 32px rgba(32, 28, 16, 0.28);
+  padding-bottom: var(--sicuro-basso);
+  overflow: hidden;
+  z-index: 5;
+  transform: translateY(calc(100% - var(--spia)));
+  transition: transform 260ms cubic-bezier(.2,.8,.2,1);
+  will-change: transform;
+}
+.pannello.mezzo { transform: translateY(45%); }
+.pannello.aperto { transform: none; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+
+.spia { flex: none; }
+.maniglia { display: grid; place-content: center; height: 28px; cursor: grab; touch-action: none; }
+.maniglia span { width: 44px; height: 5px; border-radius: 3px; background: rgba(47, 59, 66, 0.28); }
+.maniglia:focus-visible { outline: 2px solid var(--rosso); outline-offset: -2px; }
+
+.testata { position: relative; padding: 0 20px 6px; }
+.sopratitolo { margin: 0 0 2px; font-size: 12px; color: var(--rosso); }
+.testata h1 {
+  margin: 0; font-family: var(--display); font-weight: 600; font-size: 24px; line-height: 1;
+  font-variation-settings: 'opsz' 144, 'SOFT' 100; letter-spacing: -0.01em; color: var(--inchiostro);
+}
+.testata h1 br { display: none; }
+.intro { margin: 10px 20px 0; font-size: 14px; line-height: 1.5; color: var(--inchiostro-chiaro); max-width: 40ch; }
+
+.cerca { position: relative; margin: 10px 16px 0; }
+.cerca .icona { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); width: 18px; height: 18px; color: var(--inchiostro-chiaro); pointer-events: none; }
+.cerca .icona svg { width: 100%; height: 100%; }
+.cerca input {
+  width: 100%; height: 46px; padding: 0 12px 0 42px; font: inherit; font-size: 16px; color: var(--inchiostro);
+  background: #fff; border: 1px solid var(--bordo); border-radius: 10px; outline: none; -webkit-appearance: none;
+}
+.cerca input:focus { border-color: var(--rosso); box-shadow: 0 0 0 3px rgba(156, 18, 32, 0.15); }
+
+/* livelli di dettaglio */
+.livelli { margin: 10px 16px 0; }
+.livelli ol { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; }
+.livelli button {
+  width: 100%; height: 40px; padding: 0 2px; font: inherit; font-size: 13px; font-weight: 500; color: var(--inchiostro-chiaro);
+  background: transparent; border: 0; border-bottom: 3px solid var(--carta-scura); border-radius: 0; cursor: pointer;
+}
+.livelli button[aria-current="true"] { color: var(--rosso); border-bottom-color: var(--rosso-vivo); font-weight: 600; }
+.livello-cosa { margin: 6px 2px 8px; font-size: 12px; color: var(--inchiostro-chiaro); min-height: 1.4em; }
+
+.sezione { padding: 18px 16px 0; }
+.sezione h2 { margin: 0 0 8px 8px; font-family: var(--display); font-weight: 600; font-size: 18px; font-variation-settings: 'opsz' 48, 'SOFT' 100; }
+
+.elenco { list-style: none; margin: 0; padding: 0; }
+.elenco li { display: flex; }
+.elenco button {
+  flex: 1; display: flex; align-items: center; gap: 12px; text-align: left; min-height: 46px;
+  padding: 6px 10px; font: inherit; font-size: 15px; color: var(--inchiostro);
+  background: transparent; border: 0; border-radius: 8px; cursor: pointer;
+}
+.elenco button:active, .elenco button:focus-visible { background: var(--carta-scura); outline: none; }
+.elenco button.attivo { background: var(--carta-scura); color: var(--rosso); }
+.elenco .icona { flex: none; width: 24px; height: 24px; color: var(--rosso); }
+.elenco .icona svg { width: 100%; height: 100%; }
+.elenco small { margin-left: auto; color: var(--inchiostro-chiaro); font-size: 12px; white-space: nowrap; }
+.elenco.compatto { display: grid; grid-template-columns: 1fr 1fr; }
+.elenco.compatto button { font-size: 14px; min-height: 42px; padding: 4px 10px; }
+.elenco.compatto .citta { font-weight: 600; }
+.elenco li[hidden] { display: none; }
+
+.legenda { list-style: none; margin: 0; padding: 0; }
+.legenda label { display: flex; align-items: center; gap: 12px; min-height: 46px; padding: 4px 10px; font-size: 15px; cursor: pointer; border-radius: 8px; }
+.legenda input { appearance: none; width: 20px; height: 20px; margin: 0; border: 1.5px solid var(--inchiostro-chiaro); border-radius: 4px; display: grid; place-content: center; cursor: pointer; flex: none; }
+.legenda input::before { content: ''; width: 10px; height: 10px; background: var(--rosso); transform: scale(0); transition: transform 120ms; }
+.legenda input:checked::before { transform: scale(1); }
+.legenda input:focus-visible { outline: 2px solid var(--rosso); outline-offset: 2px; }
+.legenda .tratto { flex: none; width: 34px; height: 0; border-top: 4px solid var(--colore, #000); border-radius: 2px; }
+.legenda .tratto.tratteggio { border-top-style: dashed; border-top-width: 3px; }
+.legenda .icona { flex: none; width: 22px; height: 22px; color: var(--inchiostro-chiaro); }
+.legenda .icona svg { width: 100%; height: 100%; }
+.legenda small { margin-left: auto; color: var(--inchiostro-chiaro); font-size: 12px; }
+
+.piede { margin-top: auto; padding: 18px 20px 20px; }
+.piede p { margin: 0; font-size: 11px; line-height: 1.5; color: var(--inchiostro-chiaro); }
+
+/* ── Comandi ──────────────────────────────────────────── */
+.tasto-tondo {
+  width: 46px; height: 46px; display: grid; place-content: center;
+  background: var(--carta); color: var(--inchiostro); border: 0; border-radius: 50%;
+  box-shadow: 0 4px 14px rgba(32, 28, 16, 0.25); cursor: pointer;
+}
+.tasto-tondo svg { width: 22px; height: 22px; }
+.tasto-tondo:focus-visible { outline: 2px solid var(--rosso); outline-offset: 2px; }
+.comandi {
+  position: fixed; right: 12px; bottom: calc(var(--spia) + 14px + var(--sicuro-basso));
+  display: flex; flex-direction: column; gap: 10px; z-index: 4;
+  transition: bottom 260ms cubic-bezier(.2,.8,.2,1);
+}
+.solo-mobile { display: none; }
+
+/* ── Scheda del luogo ─────────────────────────────────── */
+.scheda {
+  position: fixed; left: 12px; right: 12px; bottom: calc(var(--spia) + 12px + var(--sicuro-basso));
+  padding: 16px 18px 16px; background: var(--carta); border-radius: 12px; box-shadow: var(--ombra); z-index: 6;
+  border-top: 4px solid var(--rosso-vivo);
+}
+.scheda .tasto-tondo { position: absolute; right: 6px; top: 6px; width: 40px; height: 40px; box-shadow: none; background: transparent; }
+.scheda-tipo { margin: 0 0 4px; font-size: 12px; color: var(--rosso); }
+.scheda h3 { margin: 0 40px 6px 0; font-family: var(--display); font-weight: 600; font-size: 21px; line-height: 1.1; font-variation-settings: 'opsz' 72, 'SOFT' 100; }
+.scheda p { margin: 0; font-size: 14px; line-height: 1.5; }
+.scheda-extra { margin-top: 8px !important; color: var(--inchiostro-chiaro); font-size: 13px !important; }
+.scheda-extra a { color: var(--rosso); }
+
+.avviso {
+  position: fixed; left: 50%; top: 16px; transform: translateX(-50%);
+  padding: 10px 16px; background: var(--inchiostro); color: #fff; font-size: 13px; border-radius: 8px; z-index: 7;
+  max-width: calc(100vw - 32px);
+}
+
+/* ── Telefono: niente tasti di zoom (si usa il pizzico), resta solo il tasto "vista del territorio" ── */
+@media (max-width: 760px) {
+  #zoom-piu, #zoom-meno { display: none; }
+  .comandi { top: calc(12px + env(safe-area-inset-top, 0px)); bottom: auto; }
+}
+
+/* ── Schermi larghi: pannello laterale fisso ──────────── */
+@media (min-width: 761px) {
+  .pannello {
+    left: 16px; right: auto; top: 16px; bottom: 16px; height: auto; max-height: none;
+    width: var(--pannello-l); border-radius: 6px; box-shadow: var(--ombra);
+    transform: none !important; transition: none; overflow-y: auto; scrollbar-width: thin; padding-bottom: 0;
+  }
+  .maniglia { display: none; }
+  .testata { padding: 26px 24px 18px; border-bottom: 1px solid var(--bordo); }
+  .testata h1 { font-size: 34px; line-height: 0.98; }
+  .testata h1 br { display: inline; }
+  .intro { margin: 14px 24px 0; font-size: 13.5px; }
+  .cerca { margin-top: 14px; }
+  .cerca input { height: 42px; font-size: 14px; border-radius: 4px; }
+  .livelli { margin-top: 16px; }
+  .livelli button { height: 34px; font-size: 12px; }
+  .elenco button { min-height: 36px; font-size: 13.5px; }
+  .elenco.compatto button { min-height: 32px; font-size: 12.5px; }
+  .legenda label { min-height: 36px; font-size: 13.5px; }
+  .elenco button:hover, .legenda label:hover { background: var(--carta-scura); }
+  .tasto-tondo { width: 42px; height: 42px; }
+  .tasto-tondo:hover { color: var(--rosso); }
+  .comandi { right: 16px; top: 16px; bottom: auto; gap: 8px; }
+  .scheda { left: auto; right: 16px; bottom: 32px; width: 320px; padding: 20px 22px 18px; border-radius: 6px; }
+  .avviso { top: auto; bottom: 32px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pannello, .comandi { transition: none; }
+}

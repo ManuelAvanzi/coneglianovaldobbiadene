@@ -1,0 +1,17 @@
+{
+  "name": "coneglianovaldobbiadene",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "dati": "node tools/build-data.mjs",
+    "pubblica": "node scripts/pubblica.mjs"
+  },
+  "dependencies": {
+    "@turf/turf": "^7.1.0",
+    "maplibre-gl": "^4.7.1",
+    "osmtogeojson": "^3.0.0-beta.5"
+  },
+  "description": "Mappa dinamica della Strada del Prosecco e dei Colli Conegliano Valdobbiadene (MapLibre, GitHub Pages)"
+}

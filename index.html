@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="theme-color" content="#36434B">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>Colli di Conegliano Valdobbiadene — mappa</title>
+  <meta name="description" content="Mappa dinamica della Strada del Prosecco e dei Colli Conegliano Valdobbiadene: veduta assonometrica fissa, dettagli che compaiono con lo zoom.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT@9..144,400;9..144,600;9..144,700,100&family=Albert+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="vendor/maplibre-gl.css">
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+  <div id="mappa" aria-label="Mappa dei Colli di Conegliano Valdobbiadene"></div>
+
+  <aside id="pannello" class="pannello" data-stato="spia">
+    <div class="spia">
+      <div class="maniglia" role="button" tabindex="0" aria-label="Apri o chiudi il pannello"><span></span></div>
+      <header class="testata">
+        <p class="sopratitolo">Strada del Prosecco e Vini dei Colli</p>
+        <h1>Conegliano<br> Valdobbiadene</h1>
+      </header>
+      <div class="cerca">
+        <span class="icona" data-icona="cerca"></span>
+        <input id="cerca" type="search" placeholder="Cerca un luogo o un paese" autocomplete="off" spellcheck="false" enterkeyhint="search">
+      </div>
+      <nav class="livelli" aria-label="Livello di dettaglio">
+        <ol id="livelli"></ol>
+        <p id="livello-cosa" class="livello-cosa"></p>
+      </nav>
+    </div>
+
+    <p class="intro">Le colline del Prosecco Superiore, patrimonio UNESCO dal 2019. Avvicinati per far comparire paesi, borghi, cantine ed edifici.</p>
+
+    <section class="sezione">
+      <h2>Luoghi da visitare</h2>
+      <ul id="elenco-luoghi" class="elenco"></ul>
+    </section>
+
+    <section class="sezione">
+      <h2>Paesi e borghi</h2>
+      <ul id="elenco-paesi" class="elenco compatto"></ul>
+    </section>
+
+    <section class="sezione">
+      <h2>Itinerari</h2>
+      <ul id="elenco-itinerari" class="legenda"></ul>
+    </section>
+
+    <section class="sezione">
+      <h2>Sulla mappa</h2>
+      <ul id="elenco-strati" class="legenda"></ul>
+    </section>
+
+    <footer class="piede">
+      <p>Dati cartografici © OpenStreetMap (OpenFreeMap), rilievo Mapzen/AWS. Tracciati calcolati sulla rete stradale; da verificare con il percorso ufficiale del Consorzio.</p>
+    </footer>
+  </aside>
+
+  <div class="comandi" role="group" aria-label="Comandi della mappa">
+    <button id="zoom-piu" class="tasto-tondo" type="button" aria-label="Avvicina" data-icona="piu"></button>
+    <button id="zoom-meno" class="tasto-tondo" type="button" aria-label="Allontana" data-icona="meno"></button>
+    <button id="vista-iniziale" class="tasto-tondo" type="button" aria-label="Torna alla vista del territorio" data-icona="mira"></button>
+  </div>
+
+  <article id="scheda" class="scheda" hidden>
+    <button id="scheda-chiudi" class="tasto-tondo" type="button" aria-label="Chiudi la scheda" data-icona="chiudi"></button>
+    <p id="scheda-tipo" class="scheda-tipo"></p>
+    <h3 id="scheda-nome"></h3>
+    <p id="scheda-testo"></p>
+    <p id="scheda-extra" class="scheda-extra"></p>
+  </article>
+
+  <div id="avviso" class="avviso" hidden></div>
+
+  <script>
+    // Collaudo (?collaudo): se requestAnimationFrame è fermo (pagina in background), usa un timer
+    // al suo posto, altrimenti MapLibre non carica neppure lo stile.
+    if (location.search.includes('collaudo')) {
+      const raf = window.requestAnimationFrame.bind(window);
+      window.requestAnimationFrame = (cb) => { let fatto = false; const t = setTimeout(() => { if (!fatto) { fatto = true; cb(performance.now()); } }, 40); raf((ts) => { if (!fatto) { fatto = true; clearTimeout(t); cb(ts); } }); return t; };
+      window.cancelAnimationFrame = (id) => clearTimeout(id);
+    }
+  </script>
+  <script src="vendor/maplibre-gl.js"></script>
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>
